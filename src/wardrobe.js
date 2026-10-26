@@ -1,5 +1,5 @@
 export const clothing = {
- tee: ['T-shirt','Base layer','shirt'], long: ['Long-sleeve top','Base layer','shirt'], thermal: ['Thermal base layers','Base layer','shirt'], fleece: ['Fleece','Mid layer','shirt'], sweater: ['Light jumper','Mid layer','shirt'], jacket: ['Light jacket','Outer layer','coat'], coat: ['Insulated coat','Outer layer','coat'], parka: ['Heavy parka','Outer layer','coat'], shorts: ['Shorts','Bottoms','pants'], trousers: ['Trousers','Bottoms','pants'], lined: ['Warm trousers','Bottoms','pants'], sneakers: ['Trainers','Footwear','shoe'], boots: ['Insulated boots','Footwear','shoe'], socks: ['Warm socks','Footwear','sock'], beanie: ['Beanie','Accessories','hat'], scarf: ['Scarf','Accessories','scarf'], gloves: ['Gloves','Accessories','glove'], shell: ['Waterproof shell','Rain','coat']
+ tee: ['T-shirt','Base layer','shirt'], long: ['Long-sleeve top','Base layer','shirt'], thermal: ['Thermal top','Base layer','shirt'], fleece: ['Fleece','Mid layer','shirt'], sweater: ['Light jumper','Mid layer','shirt'], jacket: ['Light jacket','Outer layer','coat'], coat: ['Insulated coat','Outer layer','coat'], parka: ['Heavy parka','Outer layer','coat'], thermalLeggings: ['Thermal leggings','Leg base','pants'], shorts: ['Shorts','Bottoms','pants'], trousers: ['Trousers','Bottoms','pants'], lined: ['Fleece-lined trousers','Leg outer','pants'], insulatedPants: ['Insulated windproof trousers','Leg outer','pants'], sneakers: ['Trainers','Footwear','shoe'], boots: ['Insulated boots','Footwear','shoe'], socks: ['Warm socks','Footwear','sock'], beanie: ['Beanie','Accessories','hat'], scarf: ['Scarf','Accessories','scarf'], gloves: ['Gloves','Accessories','glove'], shell: ['Waterproof shell','Rain','coat']
 };
 export function outfitFor(temp, sensitivity='normal', activity='walking', rain=0) {
  if (!Number.isFinite(temp)) return null;
@@ -12,8 +12,16 @@ export function outfitFor(temp, sensitivity='normal', activity='walking', rain=0
  else if(adjusted < 20){level=2;name='Take a light layer';items=['tee','sweater','trousers','sneakers'];}
  else if(adjusted < 25){level=1;name='Keep it light';items=['tee','trousers','sneakers'];}
  else {level=0;name='Easy, breezy';items=['tee','shorts','sneakers'];}
+ // Keep leg protection explicit. Comfort preferences may add insulation, but
+ // cannot remove thermal bottoms when the actual feels-like value is below 0.
+ // These are conservative planning bands, not garment temperature ratings.
+ const legTemperature=Math.min(temp,adjusted);
+ if(legTemperature<0){
+  const bottomIndex=items.findIndex(x=>['shorts','trousers','lined'].includes(x));
+  items.splice(bottomIndex,1,'thermalLeggings',legTemperature<=-10?'insulatedPants':'lined');
+ }
  if(rain>=1) items.push('shell');
- return {level,name,items,adjusted,extreme:temp<-15||temp>35,layers:items.filter(x=>['tee','long','thermal','fleece','sweater','jacket','coat','parka'].includes(x)).length};
+ return {level,name,items,adjusted,extreme:temp<-15||temp>35,layers:items.filter(x=>['tee','long','thermal','fleece','sweater','jacket','coat','parka','shell'].includes(x)).length,legLayers:items.filter(x=>['thermalLeggings','shorts','trousers','lined','insulatedPants'].includes(x)).length};
 }
 export function packingFor(stops, sensitivity, activity) {
  const items = new Set();

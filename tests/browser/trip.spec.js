@@ -11,7 +11,7 @@ async function city(page,index,name){await page.locator(`#city-${index}`).fill(n
 test('multi-city outfits, night layers, packing, preferences, persistence and reset',async({page})=>{
  const errors=[];page.on('pageerror',error=>errors.push(error.message));await fixtures(page);await page.goto('/');
  await city(page,0,'Tokyo');await page.locator('#start-0').fill(addDays(today,1));await page.getByRole('button',{name:'Add a stop'}).click();await city(page,1,'Sapporo');await page.getByRole('button',{name:'Find my layers'}).click();
- await expect(page.locator('#outfit-name')).toHaveText('Take a light layer');await expect(page.locator('#packing-list')).toContainText('Thermal base layers');await expect(page.locator('#weather-source')).toHaveText('Forecast');
+ await expect(page.locator('#outfit-name')).toHaveText('Take a light layer');await expect(page.locator('#packing-list')).toContainText('Thermal top');await expect(page.locator('#packing-list')).toContainText('Thermal leggings');await expect(page.locator('#weather-source')).toHaveText('Forecast');
  await page.getByRole('button',{name:'Night',exact:true}).click();await expect(page.locator('#outfit-name')).toHaveText('A few good layers');
  await page.getByRole('tab',{name:/Sapporo/}).click();await expect(page.locator('#outfit-name')).toHaveText('Proper winter layers');await expect(page.locator('#outfit-items')).toContainText('Gloves');
  await page.getByRole('button',{name:'Change temperature unit'}).click();await expect(page.locator('#temperature')).toHaveText('19°F');
@@ -30,4 +30,21 @@ test('mobile, long-range estimates and input validation',async({page})=>{
 test('failed services show errors, never invented forecasts',async({page})=>{
  await fixtures(page);await page.route('**/api.open-meteo.com/**',route=>route.fulfill({status:503,json:{}}));await page.goto('/');await city(page,0,'Tokyo');await page.getByRole('button',{name:'Find my layers'}).click();await expect(page.locator('#weather-source')).toHaveText('Historical estimate');await expect(page.locator('#form-status')).toContainText('Forecast unavailable');
  await page.route('**/archive-api.open-meteo.com/**',route=>route.fulfill({status:503,json:{}}));await page.reload();await page.getByRole('button',{name:'Find my layers'}).click();await expect(page.locator('#form-status')).toContainText('Weather could not be loaded');await expect(page.locator('#temperature')).toHaveText('—°');
+});
+test('minus 20 shows two leg layers in outfit, mannequin and packing list',async({page})=>{
+ await fixtures(page);
+ await page.route('**/api.open-meteo.com/**',route=>route.fulfill({json:{daily:{time:Array.from({length:16},(_,i)=>addDays(today,i)),apparent_temperature_max:Array(16).fill(-20),apparent_temperature_min:Array(16).fill(-25),precipitation_sum:Array(16).fill(0)}}}));
+ await page.goto('/');await city(page,0,'Sapporo');await page.getByRole('button',{name:'Find my layers'}).click();
+ await expect(page.locator('#temperature')).toHaveText('-20°C');
+ await expect(page.locator('#layer-count')).toHaveText('3 TOP / 2 LEG LAYERS · DAY');
+ for(const selector of ['#outfit-items','#packing-list']){
+  await expect(page.locator(selector)).toContainText('Thermal leggings');
+  await expect(page.locator(selector)).toContainText('Insulated windproof trousers');
+ }
+ await expect(page.locator('#mannequin')).toHaveAttribute('aria-label',/Thermal leggings, Insulated windproof trousers/);
+ await page.locator('#sensitivity').selectOption('warm');await page.locator('#activity').selectOption('active');
+ await expect(page.locator('#layer-count')).toContainText('2 LEG LAYERS');
+ await page.setViewportSize({width:390,height:844});
+ await page.screenshot({path:'test-results/cold-layers-mobile.png',fullPage:true});
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBeTruthy();
 });
