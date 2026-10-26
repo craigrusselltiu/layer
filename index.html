@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#e5f0eb"><meta name="description" content="What to wear, wherever you're going. A warmth-first travel wardrobe.">
+  <title>Layer — What to wear</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar"><a class="brand" href="./" aria-label="Layer home"><span class="brand-mark" aria-hidden="true">≋</span>layer</a><div class="header-actions"><button id="about-open" class="icon-button" aria-label="About weather and clothing estimates">i</button><button id="units" class="unit-button" aria-label="Change temperature unit">°C <span>/ °F</span></button></div></header>
+    <main>
+      <section class="trip-panel panel" aria-labelledby="trip-heading">
+        <div class="panel-heading"><h1 id="trip-heading">Your trip</h1><span id="trip-length" class="tiny-label">0 DAYS</span></div>
+        <form id="trip-form" novalidate><div id="stops"></div><button type="button" id="add-stop" class="add-stop"><span>＋</span> Add a stop</button><button type="submit" id="plan-button" class="primary-button">Find my layers <span>↗</span></button><p id="form-status" role="status" class="form-status"></p></form>
+        <div class="preferences"><h2>Make it yours</h2><label class="field-label" for="sensitivity">I usually feel</label><div class="select-wrap"><select id="sensitivity"><option value="cold">The cold</option><option value="normal" selected>Just right</option><option value="warm">Too warm</option></select></div><label class="field-label" for="activity">Most of the time</label><div class="select-wrap"><select id="activity"><option value="still">Taking it easy</option><option value="walking" selected>Walking around</option><option value="active">Being active</option></select></div></div>
+        <div class="trip-footer"><span class="status-dot"></span><span>Saved on this device</span><button id="reset" class="text-button">Reset</button></div>
+      </section>
+      <section class="outfit-panel panel" aria-labelledby="outfit-heading">
+        <div class="outfit-toolbar"><h2 id="outfit-heading">Your layers</h2><div class="segmented" aria-label="Time of day"><button id="day" aria-pressed="true">Day</button><button id="night" aria-pressed="false">Night</button></div></div>
+        <div id="stop-tabs" class="stop-tabs" aria-label="Trip destinations"></div>
+        <div class="dressing-room">
+          <div class="weather-display"><span id="weather-source" class="source-badge">READY TO GO</span><div id="temperature" class="big-temperature">—<sup>°</sup></div><span id="feels-label">Add your destination</span><div id="weather-extras" class="weather-extras"></div></div>
+          <div class="room-grid" aria-hidden="true"></div><div class="room-orbit" aria-hidden="true"></div><span class="room-coordinate top">OUTFIT / <span id="outfit-number">01</span></span>
+          <div id="mannequin" tabindex="0" role="img" aria-label="Rotatable mannequin. Use left and right arrow keys to rotate."></div>
+          <button id="rotate-left" class="rotate-button left" aria-label="Rotate mannequin left">↶</button><button id="rotate-right" class="rotate-button right" aria-label="Rotate mannequin right">↷</button>
+          <div class="look-caption"><span id="layer-count" class="tiny-label">YOUR EVERYDAY KIT</span><h3 id="outfit-name">Where to?</h3></div>
+        </div>
+        <div id="day-strip" class="day-strip" aria-label="Days in selected stop"></div>
+        <div id="outfit-items" class="outfit-items"><div class="empty-outfit">Your layers will appear here.</div></div>
+      </section>
+      <aside class="right-column">
+        <section class="map-panel panel" aria-labelledby="route-heading"><div class="panel-heading"><h2 id="route-heading">The route</h2><button id="fit-map" class="text-button">Recenter ↗</button></div><div id="map" aria-label="Trip route and destination temperatures"></div><div class="map-legend"><span id="legend-cold">−10°</span><span class="temperature-gradient"></span><span id="legend-hot">35°</span><span class="legend-label">FEELS LIKE</span></div></section>
+        <section class="packing-panel panel" aria-labelledby="packing-heading"><div class="panel-heading"><h2 id="packing-heading">In your bag</h2><button id="copy-list" class="icon-button" aria-label="Copy packing list">⧉</button></div><div class="packing-meta"><span>Whole trip</span><span id="packing-count">0 ITEMS</span></div><div id="packing-list"></div><div id="packing-status" role="status"></div></section>
+      </aside>
+    </main>
+    <footer class="page-footer"><a href="https://open-meteo.com/" target="_blank" rel="noreferrer">Weather by Open-Meteo ↗</a></footer>
+  </div>
+  <dialog id="about"><div class="panel-heading"><h2>A little context</h2><button id="about-close" class="icon-button" aria-label="Close">×</button></div><p>Outfits use feels-like temperatures, which account for wind and humidity. Day uses the daily high; Night uses the daily low. Your cold sensitivity and activity adjust the layers.</p><p>Dates within the next 16 days use a forecast where available. Later dates use averages for the same calendar days across the last five complete years, labelled <b>Historical estimate</b>. These are planning estimates, not a forecast.</p><p>The packing list includes day and night layers for every stop. Rain protection is added separately. The map colours show destination temperatures, not a continuous weather field.</p><p>Clothing is a starting point for everyday travel. Extreme cold, exposed terrain and specialist activities need specific preparation.</p><p>Trips stay in this browser. City searches and coordinates go to Open-Meteo; map tiles come from OpenStreetMap.</p></dialog>
+  <script type="module" src="/src/app.js"></script>
+</body>
+</html>
